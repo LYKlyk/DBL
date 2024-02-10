@@ -1,13 +1,21 @@
 import os
 import pickle
-from models.network import *
+import tensorflow as tf
 from datasets.dataset import *
 from tensorflow.keras.models import load_model
 from utils.options import *
 import time
 
+
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
+def short_pose_difference(skeleton):
+    height = skeleton.get_shape()[1]
+    width = skeleton.get_shape()[2]
+    short_skeleton = tf.subtract(skeleton[:, 1:, ...], skeleton[:, 0:-1, ...])
+    short_skeleton = tf.image.resize(short_skeleton, size=[height, width], method='nearest', antialias=True)
+    return short_skeleton
 
 def main():
     opt = parse_options()
